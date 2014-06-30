@@ -4,7 +4,9 @@
 		include 'classes/' . $class . '.class.php';
 	});
 	
-	$parser = new Parser;
+	require_once('connection.php');
+	
+	$parser = new parser;
 	
 	$inDots = $_REQUEST['AllDots'];
 	
@@ -239,15 +241,13 @@
 	];
 	
 	$a = serialize($store);
-
-	$ud = new PDO('mysql:host=localhost;dbname=vampires','prince','letmebeyourruler');
 	
-	$basicVamp = $ud->prepare('INSERT INTO  `vampires`.`vampireList` (`Name`,`Data`) VALUES (:name,:data)');
+	$basicVamp = $con->prepare('INSERT INTO  `vampires`.`vampireList` (`Name`,`Data`) VALUES (:name,:data)');
 	if (!$basicVamp->bindparam(":name",$store['fluff']['character'])) {echo 'bind :name as `' . $store['fluff']['character'] . '` failed!'; };
 	if (!$basicVamp->bindparam(":data",$a)) {echo 'bind :data as `' . $a . '` failed!'; };
 	if (!$basicVamp->execute()) {echo 'Query failed';};
 	
-	$newest = $ud->prepare('SELECT Max(`UID`) FROM `vampireList`');
+	$newest = $con->prepare('SELECT Max(`UID`) FROM `vampireList`');
 	$char = 1000;
 	if ($newest->execute()) {$char = $newest->fetchColumn();}
 	
